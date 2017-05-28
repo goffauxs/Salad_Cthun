@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: Salad_Cthun
+## Author: Goffauxs
+## Version: 1.0
+## Notes: Shows optimal positioning based on group on C'thun
+
+Salad_Cthun.lua
