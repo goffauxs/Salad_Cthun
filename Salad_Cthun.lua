@@ -94,6 +94,7 @@ function newDot(x, y, name, class)
 		function()
 			dot:Hide();
 			frame:Hide();
+			wipeReserves()
 		end
 	)
 
@@ -167,11 +168,22 @@ function getRaidInfo()
 end
 
 function fillGrid()
+	wipeReserves()
 	getRaidInfo()
 	for i=1,8 do
 		for j=1,5 do
 			local x = ((i-1)*5)+j
 			newDot(dotPos[x][1], dotPos[x][2], dotRes[i][j][1], dotRes[i][j][2])
+		end
+	end
+end
+
+function wipeReserves()
+	for i=1,8 do
+		for j=1,5 do
+			for k=1,2 do
+				dotRes[i][j][k] = "Empty"
+			end
 		end
 	end
 end
