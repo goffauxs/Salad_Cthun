@@ -41,11 +41,14 @@ local dotPos = {
 	[40] = {-30, -126} --healer/ranged  --
 }
 
+local Salad_PlayerName,_ = UnitName("player")
+local Salad_Alpha = 1.00
+
 local frame = CreateFrame("Frame", "Cthun_room", UIParent)
 frame:SetHeight(512)
 frame:SetWidth(512)
 frame:SetPoint("CENTER", 0, 0)
-frame:SetAlpha(0.80)
+frame:SetAlpha(Salad_Alpha)
 frame:Hide()
 
 local tex = frame:CreateTexture(nil, "BACKGROUND")
@@ -79,9 +82,14 @@ function newDot(x, y, name, class)
 
 	dot:SetPoint("CENTER", frame, "CENTER", x, y)
 	dot:EnableMouse(true)
-	dot:SetWidth(16)
-	dot:SetHeight(16)
-
+	if (Salad_PlayerName == name) then
+		dot:SetWidth(32)
+		dot:SetHeight(32)
+	else
+		dot:SetWidth(16)
+		dot:SetHeight(16)
+	end
+	
 	local texdot = dot:CreateTexture(nil, "OVERLAY")
 
 	dot.texture = texdot
@@ -190,20 +198,23 @@ end
 
 SLASH_SALAD1 = "/salad";
 
-local function HandleSlashCommands(str)
-	if (str == "help" or str == "") then
+local function HandleSlashCommands(msg)
+	local command, arg1 = strsplit(" ",msg)
+	if (command == "help") then
 		DEFAULT_CHAT_FRAME:AddMessage("Commands:", 1.0, 1.0, 0);
 		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6help |r-- show this help menu", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6show |r-- show c'thun positioning map", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6hide |r-- hide c'thun positioning map", 1.0, 1.0, 0);
+		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6alpha |r-- set opacity of the frame (0.00 to 1.00)", 1.0, 1.0, 0);
 		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6fill |r-- show all players on map", 1.0, 1.0, 0);
-	elseif (str == "show") then
-		frame:Show();
-	elseif (str == "hide") then
-		frame:Hide();
-	elseif (str == "fill") then
+	elseif (command == "fill" or msg == "") then
 		frame:Show();
 		fillGrid()
+	elseif (command == "alpha" and arg1 ~= "") then
+		if (tonumber(arg1) <= 1.00 and tonumber(arg1) >= 0.00) then
+			Salad_Alpha = tonumber(arg1)
+			frame:SetAlpha(Salad_Alpha)
+		else
+			DEFAULT_CHAT_FRAME:AddMessage("ex. /salad alpha 0.50     (0.50 = 50% opacity)")
+		end
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("Command not found", 1.0, 1.0, 0);
 	end
