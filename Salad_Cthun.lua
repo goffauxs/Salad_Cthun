@@ -4,7 +4,7 @@ local dotPos = {
 	[3] = {-20, 170}, --ranged    		-|Group 1 
 	[4] = {22, 171}, --ranged     		-|
 	[5] = {34, 132}, --healer/ranged    --
-	[6] = {69, 71}, -- melee      		--
+	[6] = {67, 71}, -- melee      		--
 	[7] = {69, 118}, --healer     		-|
 	[8] = {105, 137}, --ranged    		-|Group 2
 	[9] = {134, 107}, --ranged    		-|
@@ -24,7 +24,7 @@ local dotPos = {
 	[23] = {-166, -19}, --ranged  		-|Group 5
 	[24] = {-166, 22}, --ranged   		-|
 	[25] = {-127, 35}, --healer/ranged  --
-	[26] = {70, -65}, -- melee    		--
+	[26] = {69, -64}, -- melee    		--
 	[27] = {117, -64}, --healer   		-|
 	[28] = {135, -100}, --ranged  		-|Group 6
 	[29] = {107, -129}, --ranged  		-|
@@ -36,27 +36,68 @@ local dotPos = {
 	[35] = {-112, -66}, --healer/ranged --
 	[36] = {3, -92}, -- melee     		--
 	[37] = {36, -126}, --healer   		-|
-	[38] = {23, -165}, --ranged   		-|Group 8
+	[38] = {24, -165}, --ranged   		-|Group 8
 	[39] = {-18, -165}, --ranged  		-|
 	[40] = {-30, -126} --healer/ranged  --
 }
 
 local Salad_PlayerName,_ = UnitName("player")
-local Salad_Alpha = 1.00
+local backdrop = {
+	bgFile = "Interface\\AddOns\\Salad_Cthun\\Images\\CThun_Positioning.tga",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = false,
+	edgeSize = 32,
+	insets = {
+		left = 12,
+		right = 12,
+		top = 12,
+		bottom = 12
+	}
+}
 
 local frame = CreateFrame("Frame", "Cthun_room", UIParent)
-frame:SetHeight(512)
-frame:SetWidth(512)
+frame:EnableMouse(true)
+frame:SetMovable(true)
+frame:SetHeight(534)
+frame:SetWidth(534)
 frame:SetPoint("CENTER", 0, 0)
-frame:SetAlpha(Salad_Alpha)
+frame:SetBackdrop(backdrop)
+frame:SetAlpha(1.00)
+frame:SetUserPlaced(true)
 frame:Hide()
 
-local tex = frame:CreateTexture(nil, "BACKGROUND")
-tex:SetAllPoints();
-tex:SetTexture("Interface\\AddOns\\Salad_Cthun\\Images\\CThun_Positioning.tga");
+local Salad_Slider = CreateFrame("Slider", "MySlider1", frame, "OptionsSliderTemplate")
+Salad_Slider:SetPoint("BOTTOM", frame, "BOTTOMRIGHT", -80, 20)
+Salad_Slider:SetMinMaxValues(0.05, 1.00)
+Salad_Slider:SetValue(1.00)
+Salad_Slider:SetValueStep(0.05)
+getglobal(Salad_Slider:GetName() .. 'Low'):SetText('5%')
+getglobal(Salad_Slider:GetName() .. 'High'):SetText('100%')
+getglobal(Salad_Slider:GetName() .. 'Text'):SetText('Opacity')
+Salad_Slider:SetScript("OnValueChanged", function(self)
+	local value = Salad_Slider:GetValue()
+	frame:SetAlpha(value)
+end)
+
+local Salad_Header = CreateFrame("Frame", "Salad_Header", frame)
+Salad_Header:SetPoint("TOP", frame, "TOP", 0, 12)
+Salad_Header:SetWidth(256)
+Salad_Header:SetHeight(64)
+Salad_Header:SetBackdrop({
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Header"
+})
+
+local Salad_TitleRegion = frame:CreateTitleRegion()
+Salad_TitleRegion:SetWidth(256)
+Salad_TitleRegion:SetHeight(64)
+Salad_TitleRegion:SetPoint("TOP", frame, "TOP", 0, 12)
+
+local Salad_Fontstring = Salad_Header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+Salad_Fontstring:SetPoint("CENTER", Salad_Header, "CENTER", 0, 12)
+Salad_Fontstring:SetText("Salad_Cthun")
 
 local button = CreateFrame("Button", "Close_button", frame)
-button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+button:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
 button:SetHeight(32)
 button:SetWidth(32)
 button:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
@@ -198,23 +239,14 @@ end
 
 SLASH_SALAD1 = "/salad";
 
-local function HandleSlashCommands(msg)
-	local command, arg1 = strsplit(" ",msg)
-	if (command == "help") then
+local function HandleSlashCommands(str)
+	if (str == "help") then
 		DEFAULT_CHAT_FRAME:AddMessage("Commands:", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6help |r-- show this help menu", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6alpha |r-- set opacity of the frame (0.00 to 1.00)", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   salad |cff00d2d6fill |r-- show all players on map", 1.0, 1.0, 0);
-	elseif (command == "fill" or msg == "") then
+		DEFAULT_CHAT_FRAME:AddMessage("   /salad |cff00d2d6help |r-- show this help menu", 1.0, 1.0, 0);
+		DEFAULT_CHAT_FRAME:AddMessage("   /salad |cff00d2d6fill |r-- show all players on map (/salad)", 1.0, 1.0, 0);
+	elseif (str == "fill" or str == "" or str == nil) then
 		frame:Show();
 		fillGrid()
-	elseif (command == "alpha" and arg1 ~= "") then
-		if (tonumber(arg1) <= 1.00 and tonumber(arg1) >= 0.00) then
-			Salad_Alpha = tonumber(arg1)
-			frame:SetAlpha(Salad_Alpha)
-		else
-			DEFAULT_CHAT_FRAME:AddMessage("ex. /salad alpha 0.50     (0.50 = 50% opacity)")
-		end
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("Command not found", 1.0, 1.0, 0);
 	end
