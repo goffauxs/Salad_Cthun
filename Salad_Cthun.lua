@@ -41,6 +41,17 @@ local dotPos = {
 	[40] = {-30, -126} --healer/ranged  --
 }
 
+local classColors = {
+	["warrior"] = {0.68, 0.51, 0.33},
+	["rogue"] = {1.0, 0.96, 0.31},
+	["mage"] = {0.21, 0.60, 0.74},
+	["warlock"] = {0.48, 0.41, 0.69},
+	["hunter"] = {0.47, 0.73, 0.25},
+	["priest"] = {1.0, 1.00, 1.00},
+	["paladin"] = {0.96, 0.55, 0.73},
+	["druid"] = {1.0, 0.49, 0.04}
+}
+
 local Salad_PlayerName,_ = UnitName("player")
 local backdrop = {
 	bgFile = "Interface\\AddOns\\Salad_Cthun\\Images\\CThun_Positioning.tga",
@@ -65,6 +76,10 @@ frame:SetBackdrop(backdrop)
 frame:SetAlpha(1.00)
 frame:SetUserPlaced(true)
 frame:SetFrameStrata("HIGH")
+frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+frame:SetScript("OnEvent", function()
+	fillGrid()
+end)
 frame:Hide()
 
 local Salad_Slider = CreateFrame("Slider", "MySlider1", frame, "OptionsSliderTemplate")
@@ -125,55 +140,53 @@ button:SetScript("OnClick",
 	end
 )
 
-local num_dots = 0
-
-function newDot(x, y, name, class)
-	num_dots = num_dots + 1
-
-	local dot = CreateFrame("Button", "Dot_"..num_dots, frame)
-
-	dot:SetPoint("CENTER", frame, "CENTER", x, y)
+--Create dot frames
+for i=1,40 do
+	dot = CreateFrame("Button", "Dot_"..i, frame)
+	dot:SetPoint("CENTER", frame, "CENTER", dotPos[i][1], dotPos[i][2])
 	dot:EnableMouse(true)
+	dot:SetFrameLevel(dot:GetFrameLevel()+3)
+	tooltip = CreateFrame("GameTooltip", "Tooltip_"..i, nil, "GameTooltipTemplate")
+	local texdot = dot:CreateTexture("Texture_"..i, "OVERLAY")
+	dot.texture = texdot
+	texdot:SetAllPoints(dot)
+	texdot:SetTexture("Interface\\AddOns\\Salad_Cthun\\Images\\playerdot.tga")
+	texdot:Hide()
+	dot:SetScript("OnEnter", function()
+		tooltip:SetOwner(dot, "ANCHOR_RIGHT")
+		tooltip:SetText("Empty")
+		tooltip:Show()
+	end)
+	dot:SetScript("OnLeave", function()
+		tooltip:Hide()
+	end)
+end
+
+function newDot(dot, tooltip, texture, name, class)
 	if (Salad_PlayerName == name) then
-		dot:SetWidth(32)
-		dot:SetHeight(32)
+		dot:SetWidth(36)
+		dot:SetHeight(36)
 	else
-		dot:SetWidth(16)
-		dot:SetHeight(16)
+		dot:SetWidth(20)
+		dot:SetHeight(20)
 	end
 	
 	if name ~= "Empty" then
-		local texdot = dot:CreateTexture(nil, "OVERLAY")
-
-		dot.texture = texdot
-		texdot:SetAllPoints(dot)
-		texdot:SetTexture("Interface\\AddOns\\Salad_Cthun\\Images\\playerdot_".. class ..".tga")
+		texture:SetVertexColor(classColors[class][1], classColors[class][2], classColors[class][3], 1.0)
+		texture:Show()
+	else
+		texture:Hide()	
 	end
-		
-	dot:SetFrameLevel(dot:GetFrameLevel()+3)
-	dot:RegisterEvent("RAID_ROSTER_UPDATE")
-	dot:SetScript("OnEvent", 
-		function()
-			dot:Hide();
-			frame:Hide();
-			wipeReserves()
-		end
-	)
 
-	dot:SetScript("OnEnter",
-		function()
-			GameTooltip:SetOwner(dot, "ANCHOR_RIGHT")
-			GameTooltip:SetText(name)
-			GameTooltip:Show()
-		end
-	)
-	dot:SetScript("OnLeave",
-		function()
-			GameTooltip:Hide()
-		end
-	)
-
-	return dot
+	dot:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(dot, "ANCHOR_RIGHT")
+		GameTooltip:SetText(name)
+		GameTooltip:Show()
+	end)
+	
+	dot:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	e
 end
 
 local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"}}, -- group 1
@@ -187,7 +200,7 @@ local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty",
 
 function getRaidInfo()
 	for i=1,40 do
-		local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+		local name,_,subgroup,_,class = GetRaidRosterInfo(i);
 
 		if (class == "Rogue" or class == "Warrior") then
 			if dotRes[subgroup][1][1] == "Empty" or dotRes[subgroup][1][1] == name then
@@ -235,7 +248,7 @@ function fillGrid()
 	for i=1,8 do
 		for j=1,5 do
 			local x = ((i-1)*5)+j
-			newDot(dotPos[x][1], dotPos[x][2], dotRes[i][j][1], strlower(dotRes[i][j][2]))
+			newDot(_G["Dot_"..x], _G["Tooltip_"..x], _G["Texture_"..x], dotRes[i][j][1], strlower(dotRes[i][j][2]))
 		end
 	end
 end
@@ -256,7 +269,7 @@ local function HandleSlashCommands(str)
 	if (str == "help") then
 		print("|cffffff00Commands:");
 		print("|cffffff00   /salad |cff00d2d6help |r|cffffff00-- show this help menu");
-		print("|cffffff00   /salad |cff00d2d6fill |r|cffffff00-- show all players on map (/salad)");
+		print("|cffffff00   /salad -- open cthun map");
 	elseif (str == "fill" or str == "" or str == nil) then
 		frame:Show();
 		fillGrid()
