@@ -64,6 +64,7 @@ frame:SetPoint("CENTER", 0, 0)
 frame:SetBackdrop(backdrop)
 frame:SetAlpha(1.00)
 frame:SetUserPlaced(true)
+frame:SetFrameStrata("HIGH")
 frame:Hide()
 
 local Salad_Slider = CreateFrame("Slider", "MySlider1", frame, "OptionsSliderTemplate")
@@ -87,10 +88,20 @@ Salad_Header:SetBackdrop({
 	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Header"
 })
 
-local Salad_TitleRegion = frame:CreateTitleRegion()
-Salad_TitleRegion:SetWidth(256)
-Salad_TitleRegion:SetHeight(64)
-Salad_TitleRegion:SetPoint("TOP", frame, "TOP", 0, 12)
+local drag = CreateFrame("Frame", nil, frame)
+drag:SetWidth(256)
+drag:SetHeight(64)
+drag:SetPoint("TOP", frame, "TOP", 0, 12)
+drag:EnableMouse(true)
+drag:SetScript("OnMouseDown", function()
+	frame:StartMoving()
+end)
+drag:SetScript("OnMouseUp", function()
+	frame:StopMovingOrSizing()
+end)
+drag:SetScript("OnHide", function()
+	frame:StopMovingOrSizing()
+end)
 
 local Salad_Fontstring = Salad_Header:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 Salad_Fontstring:SetPoint("CENTER", Salad_Header, "CENTER", 0, 12)
@@ -131,12 +142,14 @@ function newDot(x, y, name, class)
 		dot:SetHeight(16)
 	end
 	
-	local texdot = dot:CreateTexture(nil, "OVERLAY")
+	if name ~= "Empty" then
+		local texdot = dot:CreateTexture(nil, "OVERLAY")
 
-	dot.texture = texdot
-	texdot:SetAllPoints(dot)
-	texdot:SetTexture("Interface\\AddOns\\Salad_Cthun\\Images\\playerdot_".. class ..".tga")
-
+		dot.texture = texdot
+		texdot:SetAllPoints(dot)
+		texdot:SetTexture("Interface\\AddOns\\Salad_Cthun\\Images\\playerdot_".. class ..".tga")
+	end
+		
 	dot:SetFrameLevel(dot:GetFrameLevel()+3)
 	dot:RegisterEvent("RAID_ROSTER_UPDATE")
 	dot:SetScript("OnEvent", 
@@ -222,7 +235,7 @@ function fillGrid()
 	for i=1,8 do
 		for j=1,5 do
 			local x = ((i-1)*5)+j
-			newDot(dotPos[x][1], dotPos[x][2], dotRes[i][j][1], dotRes[i][j][2])
+			newDot(dotPos[x][1], dotPos[x][2], dotRes[i][j][1], strlower(dotRes[i][j][2]))
 		end
 	end
 end
@@ -241,14 +254,14 @@ SLASH_SALAD1 = "/salad";
 
 local function HandleSlashCommands(str)
 	if (str == "help") then
-		DEFAULT_CHAT_FRAME:AddMessage("Commands:", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   /salad |cff00d2d6help |r-- show this help menu", 1.0, 1.0, 0);
-		DEFAULT_CHAT_FRAME:AddMessage("   /salad |cff00d2d6fill |r-- show all players on map (/salad)", 1.0, 1.0, 0);
+		print("|cffffff00Commands:");
+		print("|cffffff00   /salad |cff00d2d6help |r|cffffff00-- show this help menu");
+		print("|cffffff00   /salad |cff00d2d6fill |r|cffffff00-- show all players on map (/salad)");
 	elseif (str == "fill" or str == "" or str == nil) then
 		frame:Show();
 		fillGrid()
 	else
-		DEFAULT_CHAT_FRAME:AddMessage("Command not found", 1.0, 1.0, 0);
+		print("|cffffff00Command not found");
 	end
 end
 
