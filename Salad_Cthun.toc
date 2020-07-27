@@ -1,4 +1,4 @@
-## Interface: 11200
+## Interface: 11305
 ## Title: Salad_Cthun
 ## Author: Goffauxs
 ## Version: 1.0
