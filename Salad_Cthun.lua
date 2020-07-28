@@ -49,7 +49,8 @@ local classColors = {
 	["hunter"] = {0.47, 0.73, 0.25},
 	["priest"] = {1.0, 1.00, 1.00},
 	["paladin"] = {0.96, 0.55, 0.73},
-	["druid"] = {1.0, 0.49, 0.04}
+	["druid"] = {1.0, 0.49, 0.04},
+	["shaman"] = {0.0, 0.44, 0.87}
 }
 
 local Salad_PlayerName,_ = UnitName("player")
@@ -226,7 +227,7 @@ function getRaidInfo()
 			else 
 				dotRes[subgroup][1] = {name, class}
 			end
-		elseif (class == "Priest" or class == "Paladin" or class == "Druid") then
+		elseif (class == "Priest" or class == "Paladin" or class == "Druid" or class == "Shaman") then
 			if dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
 				dotRes[subgroup][2] = {name, class}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
