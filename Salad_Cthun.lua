@@ -186,7 +186,7 @@ function newDot(dot, tooltip, texture, name, class)
 	
 	dot:SetScript("OnLeave", function()
 		GameTooltip:Hide()
-	e
+	end)
 end
 
 local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"}}, -- group 1
@@ -200,43 +200,43 @@ local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty",
 
 function getRaidInfo()
 	for i=1,40 do
-		local name,_,subgroup,_,class = GetRaidRosterInfo(i);
+		local name,_,subgroup,_,class,fileName = GetRaidRosterInfo(i);
 
-		if (class == "Rogue" or class == "Warrior") then
+		if (fileName == "ROGUE" or fileName == "WARRIOR") then
 			if dotRes[subgroup][1][1] == "Empty" or dotRes[subgroup][1][1] == name then
-				dotRes[subgroup][1] = {name, class}
+				dotRes[subgroup][1] = {name, fileName}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
-				dotRes[subgroup][5] = {name, class}
+				dotRes[subgroup][5] = {name, fileName}
 			elseif dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
-				dotRes[subgroup][2] = {name, class}
+				dotRes[subgroup][2] = {name, fileName}
 			elseif dotRes[subgroup][3][1] == "Empty" or dotRes[subgroup][3][1] == name then
-				dotRes[subgroup][3] = {name, class}
+				dotRes[subgroup][3] = {name, fileName}
 			else
-				dotRes[subgroup][4] = {name, class}
+				dotRes[subgroup][4] = {name, fileName}
 			end
-		elseif (class == "Mage" or class == "Warlock" or class == "Hunter") then
+		elseif (fileName == "MAGE" or fileName == "WARLOCK" or fileName == "HUNTER") then
 			if dotRes[subgroup][3][1] == "Empty" or dotRes[subgroup][3][1] == name then
-				dotRes[subgroup][3] = {name, class}
+				dotRes[subgroup][3] = {name, fileName}
 			elseif dotRes[subgroup][4][1] == "Empty" or dotRes[subgroup][4][1] == name then
-				dotRes[subgroup][4] = {name, class}
+				dotRes[subgroup][4] = {name, fileName}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
-				dotRes[subgroup][5] = {name, class}
+				dotRes[subgroup][5] = {name, fileName}
 			elseif dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
-				dotRes[subgroup][2] = {name, class}
+				dotRes[subgroup][2] = {name, fileName}
 			else 
-				dotRes[subgroup][1] = {name, class}
+				dotRes[subgroup][1] = {name, fileName}
 			end
-		elseif (class == "Priest" or class == "Paladin" or class == "Druid") then
+		elseif (fileName == "PRIEST" or fileName == "PALADIN" or fileName == "DRUID" or fileName == "CHAMAN") then
 			if dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
-				dotRes[subgroup][2] = {name, class}
+				dotRes[subgroup][2] = {name, fileName}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
-				dotRes[subgroup][5] = {name, class}
+				dotRes[subgroup][5] = {name, fileName}
 			elseif dotRes[subgroup][3][1] == "Empty" or dotRes[subgroup][3][1] == name then
-				dotRes[subgroup][3] = {name, class}
+				dotRes[subgroup][3] = {name, fileName}
 			elseif dotRes[subgroup][4][1] == "Empty" or dotRes[subgroup][4][1] == name then
-				dotRes[subgroup][4] = {name, class}
+				dotRes[subgroup][4] = {name, fileName}
 			else
-				dotRes[subgroup][1] = {name, class}
+				dotRes[subgroup][1] = {name, fileName}
 			end
 		end
 	end
