@@ -49,7 +49,8 @@ local classColors = {
 	["hunter"] = {0.47, 0.73, 0.25},
 	["priest"] = {1.0, 1.00, 1.00},
 	["paladin"] = {0.96, 0.55, 0.73},
-	["druid"] = {1.0, 0.49, 0.04}
+	["druid"] = {1.0, 0.49, 0.04},
+	["shaman"] = {0.0, 0.34, 0.77}
 }
 
 local Salad_PlayerName,_ = UnitName("player")
@@ -111,9 +112,11 @@ drag:EnableMouse(true)
 drag:SetScript("OnMouseDown", function()
 	frame:StartMoving()
 end)
+
 drag:SetScript("OnMouseUp", function()
 	frame:StopMovingOrSizing()
 end)
+
 drag:SetScript("OnHide", function()
 	frame:StopMovingOrSizing()
 end)
@@ -175,18 +178,18 @@ function newDot(dot, tooltip, texture, name, class)
 		texture:SetVertexColor(classColors[class][1], classColors[class][2], classColors[class][3], 1.0)
 		texture:Show()
 	else
-		texture:Hide()	
+		texture:Hide()
 	end
 
 	dot:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(dot, "ANCHOR_RIGHT")
-		GameTooltip:SetText(name)
-		GameTooltip:Show()
+		tooltip:SetOwner(dot, "ANCHOR_RIGHT")
+		tooltip:SetText(name)
+		tooltip:Show()
 	end)
-	
+
 	dot:SetScript("OnLeave", function()
-		GameTooltip:Hide()
-	e
+		tooltip:Hide()
+	end)
 end
 
 local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"}}, -- group 1
@@ -226,7 +229,7 @@ function getRaidInfo()
 			else 
 				dotRes[subgroup][1] = {name, class}
 			end
-		elseif (class == "Priest" or class == "Paladin" or class == "Druid") then
+		elseif (class == "Priest" or class == "Paladin" or class == "Druid" or class == "Shaman") then
 			if dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
 				dotRes[subgroup][2] = {name, class}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
