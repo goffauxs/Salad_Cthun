@@ -203,9 +203,9 @@ local dotRes = {{{"Empty","Empty"},{"Empty","Empty"},{"Empty","Empty"},{"Empty",
 
 function getRaidInfo()
 	for i=1,40 do
-		local name,_,subgroup,_,class = GetRaidRosterInfo(i);
+		local name, rank, subgroup, level, localizedClass, class, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
 
-		if (class == "Rogue" or class == "Warrior") then
+		if (class == "ROGUE" or class == "WARRIOR") then
 			if dotRes[subgroup][1][1] == "Empty" or dotRes[subgroup][1][1] == name then
 				dotRes[subgroup][1] = {name, class}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
@@ -217,7 +217,7 @@ function getRaidInfo()
 			else
 				dotRes[subgroup][4] = {name, class}
 			end
-		elseif (class == "Mage" or class == "Warlock" or class == "Hunter") then
+		elseif (class == "MAGE" or class == "WARLOCK" or class == "HUNTER") then
 			if dotRes[subgroup][3][1] == "Empty" or dotRes[subgroup][3][1] == name then
 				dotRes[subgroup][3] = {name, class}
 			elseif dotRes[subgroup][4][1] == "Empty" or dotRes[subgroup][4][1] == name then
@@ -229,7 +229,7 @@ function getRaidInfo()
 			else 
 				dotRes[subgroup][1] = {name, class}
 			end
-		elseif (class == "Priest" or class == "Paladin" or class == "Druid" or class == "Shaman") then
+		elseif (class == "PRIEST" or class == "PALADIN" or class == "DRUID" or class == "SHAMAN") then
 			if dotRes[subgroup][2][1] == "Empty" or dotRes[subgroup][2][1] == name then
 				dotRes[subgroup][2] = {name, class}
 			elseif dotRes[subgroup][5][1] == "Empty" or dotRes[subgroup][5][1] == name then
